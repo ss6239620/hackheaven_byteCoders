@@ -4,6 +4,7 @@ import { blueText, blackText, grayText, colorTheme } from '../../constant'
 import Header from '../../components/Header'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import SocketIoClient from 'socket.io-client'
+import RNFS from 'react-native-fs';
 
 const userData = [
     {
@@ -55,7 +56,7 @@ const userData = [
     },
 ]
 
-const test= ['hhsh','shhshsh',"sshhs"]
+const test = ['hhsh', 'shhshsh', "sshhs"]
 
 function HeaderComponent(params) {
     return (
@@ -98,7 +99,33 @@ function MessageBox({ data, isUser }) {
 export default function Message() {
     const [input, setInput] = useState('')
     const [message, setMessage] = useState([])
+    const [fileWrite, setFileWrite] = useState([])
+    const [fileData, setFileData] = useState([]);
     const socket = useRef()
+
+    const filePath = RNFS.DocumentDirectoryPath + "/Message.json"; //absolute path of our file╕
+
+    const makeFile = async (filePath, content) => {
+        try {
+            //create a file at filePath. Write the content data to it
+            await RNFS.writeFile(filePath, content, "utf8");
+            console.log("written to file");
+        } catch (error) { //if the function throws an error, log it out.
+            console.log(error);
+        }
+    };
+
+    const readFile = async (path) => {
+        const response = await RNFS.readFile(path);
+        setFileWrite(response)
+        // setFileData(JSON.parse(response)); //set the value of response to the fileData Hook.
+    };
+
+
+    useEffect(() => {
+        // makeFile(filePath, JSON.stringify(userData))
+        readFile(filePath)
+    }, []);
 
     useEffect(() => {
         socket.current = SocketIoClient('https://healthcare-3o61.onrender.com/')
@@ -109,15 +136,45 @@ export default function Message() {
             console.log('Disconnected from server');
         })
         socket.current.on('chat-message', (msg) => {
-            setMessage((prevMessage)=>[
+            setMessage((prevMessage) => [
                 ...prevMessage,
                 msg
             ])
         })
     }, [])
 
+    function createUserData(userData) {
+        const currentTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        const data = {
+            id: "1",
+            name: 'Sharvesh Singh',
+            msg: `${userData}`,
+            time: `${currentTime}`
+        }
+        return JSON.stringify(data)
+    }
+
+    function appendWriteMsg(msg) {
+        setFileWrite((prevmsg) => [
+            ...prevmsg,
+            msg
+        ])
+    }
+
+    const deleteFile = async (path) => {
+        try {
+          await RNFS.unlink(path); //delete the item present at 'path'
+          console.log("file deleted");
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
     const sendMessage = () => {
         socket.current.emit('chat-message', input)
+        const jsonMsgData = createUserData(input)
+        appendWriteMsg(jsonMsgData)
+        makeFile(filePath,fileWrite)
         setInput('')
     }
     return (
@@ -138,13 +195,14 @@ export default function Message() {
                 <ScrollView>
                     <Text style={[styles.bigText, { margin: 10, textAlign: "center", color: grayText.color, }]}>Today</Text>
                     {
-                    message.map((data, index) => {
-                        return (
-                            <View key={index}>
-                                <MessageBox data={data} />
-                            </View>
-                        )
-                    })}
+                        message.map((data, index) => {
+                            return (
+                                <View key={index}>
+                                    <MessageBox data={data} />
+                                </View>
+                            )
+                        })}
+                    <Text>{fileWrite}</Text>
                 </ScrollView>
                 <View style={styles.textInput}>
                     <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} />
@@ -157,6 +215,7 @@ export default function Message() {
                     />
                     <MaterialIcons name="send" color={colorTheme.primaryColor} size={25} style={{ marginRight: 5 }} onPress={sendMessage} />
                 </View>
+                <Text>{fileWrite}</Text>
             </View>
         </View >
     )
