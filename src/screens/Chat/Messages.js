@@ -79,14 +79,14 @@ function MessageBox({ data, isUser }) {
                 <View style={{ backgroundColor: isUser ? colorTheme.primaryColor : "white", elevation: 2, marginBottom: 2, borderRadius: 10, flexWrap: 'wrap' }}>
                     <View style={{ margin: 10 }}>
                         <Text style={{ color: isUser ? "white" : "black" }}>
-                            {data}
+                            {data.msg}
                         </Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: "center", marginTop: 5 }}>
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Image source={require('../../assets/img/health.jpg')} resizeMode='contain' style={[styles.image, { width: 25, height: 25, marginRight: 5 }]} />
-                        <Text>{data}</Text>
+                        <Text>{data.msg}</Text>
                     </View>
                     <Text>{data.time} Pm</Text>
                 </View>
@@ -99,84 +99,86 @@ function MessageBox({ data, isUser }) {
 export default function Message() {
     const [input, setInput] = useState('')
     const [message, setMessage] = useState([])
-    const [fileWrite, setFileWrite] = useState([])
-    const [fileData, setFileData] = useState([]);
     const socket = useRef()
 
-    const filePath = RNFS.DocumentDirectoryPath + "/Message.json"; //absolute path of our file╕
+    const filePath = RNFS.DocumentDirectoryPath + '/message.txt';
 
-    const makeFile = async (filePath, content) => {
+    const appendToFile = async (path, content) => {
         try {
-            //create a file at filePath. Write the content data to it
-            await RNFS.writeFile(filePath, content, "utf8");
-            console.log("written to file");
-        } catch (error) { //if the function throws an error, log it out.
+            await RNFS.appendFile(path, content, 'utf8');
+            console.log('Content appended to file');
+        } catch (error) {
+            console.error('Error appending to file: ', error);
+        }
+    };
+
+    const deleteFile = async (path) => {
+        try {
+            await RNFS.unlink(path);
+            console.log("file deleted");
+        } catch (error) {
             console.log(error);
         }
     };
 
     const readFile = async (path) => {
-        const response = await RNFS.readFile(path);
-        setFileWrite(response)
-        // setFileData(JSON.parse(response)); //set the value of response to the fileData Hook.
+        try {
+            const content = await RNFS.readFile(path, 'utf8');
+            console.log('File content:', content);
+            // Split the content into messages
+            const messages = content.trim().split('\n').map(line => {
+                const [msg, time] = line.split('*');
+                return { msg, time };
+            });
+            setMessage(messages);
+        } catch (error) {
+            console.error('Error reading file: ', error);
+        }
     };
 
-
     useEffect(() => {
-        // makeFile(filePath, JSON.stringify(userData))
-        readFile(filePath)
+
+        const initializeFile = async () => {
+            try {
+                const fileExists = await RNFS.exists(filePath);
+                if (!fileExists) {
+                    await RNFS.writeFile(filePath, '', 'utf8');
+                    console.log('File created');
+                }
+                readFile(filePath);
+            } catch (error) {
+                console.error('Error initializing file: ', error);
+            }
+        };
+        initializeFile();
+
+        const socket = SocketIoClient('https://healthcare-3o61.onrender.com/');
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+        socket.on('chat-message', (msg) => {
+            setMessage(prevMessages => [...prevMessages, msg]);
+            const formattedMsg = `${msg.msg}*${msg.time}\n`; // Format message with '*'
+            appendToFile(filePath, formattedMsg);
+        });
+        readFile(filePath); // Read file when component mounts
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
-    useEffect(() => {
-        socket.current = SocketIoClient('https://healthcare-3o61.onrender.com/')
-        socket.current.on('connect', () => {
-            console.log('connected to server');
-        })
-        socket.current.on('disconnect', () => {
-            console.log('Disconnected from server');
-        })
-        socket.current.on('chat-message', (msg) => {
-            setMessage((prevMessage) => [
-                ...prevMessage,
-                msg
-            ])
-        })
-    }, [])
+    const sendMessage = async () => {
+        const currentTime = new Date().toLocaleTimeString();
+        const newMessage = { msg: input, time: currentTime };
+        setMessage([...message, newMessage]);
+        const formattedMsg = `${input}*${currentTime}\n`; // Format message with '*'
+        appendToFile(filePath, formattedMsg);
+        setInput('');
+    };
 
-    function createUserData(userData) {
-        const currentTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        const data = {
-            id: "1",
-            name: 'Sharvesh Singh',
-            msg: `${userData}`,
-            time: `${currentTime}`
-        }
-        return JSON.stringify(data)
-    }
-
-    function appendWriteMsg(msg) {
-        setFileWrite((prevmsg) => [
-            ...prevmsg,
-            msg
-        ])
-    }
-
-    const deleteFile = async (path) => {
-        try {
-          await RNFS.unlink(path); //delete the item present at 'path'
-          console.log("file deleted");
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-    const sendMessage = () => {
-        socket.current.emit('chat-message', input)
-        const jsonMsgData = createUserData(input)
-        appendWriteMsg(jsonMsgData)
-        makeFile(filePath,fileWrite)
-        setInput('')
-    }
     return (
         <View style={styles.container}>
             <ScrollView style={styles.subContainer}>
@@ -202,10 +204,10 @@ export default function Message() {
                                 </View>
                             )
                         })}
-                    <Text>{fileWrite}</Text>
+                    {/* <Text>{fileWrite}</Text> */}
                 </ScrollView>
                 <View style={styles.textInput}>
-                    <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} />
+                    <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} onPress={()=>deleteFile(filePath)} />
                     <TextInput
                         placeholder='Type Message here..'
                         onChangeText={setInput}
@@ -215,7 +217,7 @@ export default function Message() {
                     />
                     <MaterialIcons name="send" color={colorTheme.primaryColor} size={25} style={{ marginRight: 5 }} onPress={sendMessage} />
                 </View>
-                <Text>{fileWrite}</Text>
+                {/* <Text>{fileWrite}</Text> */}
             </View>
         </View >
     )

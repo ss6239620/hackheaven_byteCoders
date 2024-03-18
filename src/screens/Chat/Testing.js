@@ -1,38 +1,130 @@
-import React, { useEffect } from 'react';
-import { Alert, Button, SafeAreaView, ScrollView } from 'react-native';
-import { pickFile, read } from '@dr.pogodin/react-native-fs';
-import TestBaseMethods from './TestBaseMethods';
-import TestConstants from './TestConstants';
-import { start, stop } from './testServer';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import SocketIoClient from 'socket.io-client';
+import RNFS from 'react-native-fs';
 
-export default function App() {
-  useEffect(() => {
-    start();
-    return () => {
-      stop();
+const colorTheme = {
+    primaryColor: 'blue',
+    borderColor: 'gray'
+};
+
+export default function Message() {
+    const [input, setInput] = useState('');
+    const [message, setMessage] = useState([]);
+    const filePath = RNFS.DocumentDirectoryPath + '/message.txt';
+
+    const appendToFile = async (path, content) => {
+        try {
+            await RNFS.appendFile(path, content, 'utf8');
+            console.log('Content appended to file');
+        } catch (error) {
+            console.error('Error appending to file: ', error);
+        }
     };
-  }, []);
 
-  return React.createElement(
-    SafeAreaView,
-    null,
-    React.createElement(
-      ScrollView,
-      null,
-      React.createElement(TestConstants, null),
-      React.createElement(TestBaseMethods, null),
-      React.createElement(Button, {
-        onPress: async () => {
-          const res = await pickFile();
-          Alert.alert(`Picked ${res.length} file(s)`, res.join('; '));
+    const deleteFile = async (path) => {
+        try {
+            await RNFS.unlink(path);
+            console.log("file deleted");
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-          for (let i = 0; i < res.length; ++i) {
-            const begin = await read(res[0], 10);
-            Alert.alert(`File #${i + 1} starts with`, begin);
-          }
-        },
-        title: 'pickFile()',
-      })
-    )
-  );
+    const readFile = async (path) => {
+        try {
+            const content = await RNFS.readFile(path, 'utf8');
+            console.log('File content:', content);
+            // Split the content into messages
+            const messages = content.trim().split('\n').map(line => {
+                const [msg, time] = line.split('*');
+                return { msg, time };
+            });
+            setMessage(messages);
+        } catch (error) {
+            console.error('Error reading file: ', error);
+        }
+    };
+
+    useEffect(() => {
+        const socket = SocketIoClient('https://healthcare-3o61.onrender.com/');
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+        socket.on('chat-message', (msg) => {
+            setMessage(prevMessages => [...prevMessages, msg]);
+            const formattedMsg = `${msg.msg}*${msg.time}\n`; // Format message with '*'
+            appendToFile(filePath, formattedMsg);
+        });
+        readFile(filePath); // Read file when component mounts
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    const sendMessage = async () => {
+        const currentTime = new Date().toLocaleTimeString();
+        const newMessage = { msg: input, time: currentTime };
+        setMessage([...message, newMessage]);
+        const formattedMsg = `${input}*${currentTime}\n`; // Format message with '*'
+        appendToFile(filePath, formattedMsg);
+        setInput('');
+    };
+
+    return (
+        <View style={styles.container}>
+            <ScrollView style={styles.subContainer}>
+                <Text style={styles.bigText}>Today</Text>
+                {message.map((data, index) => (
+                    <View key={index} style={{ marginVertical: 5 }}>
+                        <Text style={{ fontWeight: 'bold' }}>{data.msg}</Text>
+                        <Text>{data.time}</Text>
+                    </View>
+                ))}
+            </ScrollView>
+            <View style={styles.textInput}>
+                <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} onPress={() => deleteFile(filePath)} />
+                <TextInput
+                    placeholder="Type Message here.."
+                    onChangeText={setInput}
+                    value={input}
+                    style={{ flex: 1, marginLeft: 5 }}
+                    multiline
+                />
+                <MaterialIcons
+                    name="send"
+                    color={colorTheme.primaryColor}
+                    size={25}
+                    style={{ marginRight: 5 }}
+                    onPress={sendMessage}
+                />
+            </View>
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    subContainer: {
+        flex: 1,
+        padding: 10,
+    },
+    bigText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    textInput: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderTopColor: colorTheme.borderColor,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+    },
+});
