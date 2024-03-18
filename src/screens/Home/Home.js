@@ -74,7 +74,7 @@ export default function Home({ navigation }) {
   const [filterModal, setFilterModal] = useState(false)
   const [notificationModal, setNotificationModal] = useState(false)
   const [categoryModalVisible, setcategoryModalVisible] = useState(false);
-  const [topDoctorModal, setTopDoctorModal] = useState(false);
+  const [topDoctorModal, setTopDoctorModal] = useState(false); 
   const [topHosPitalModal, setTopHospitalModal] = useState(false);
   const [AddTaskModal, setAddTaskModal] = useState(false);
   const [supportiveContent, setSupportiveContent] = useState(false);

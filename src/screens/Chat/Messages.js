@@ -4,7 +4,6 @@ import { blueText, blackText, grayText, colorTheme } from '../../constant'
 import Header from '../../components/Header'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import SocketIoClient from 'socket.io-client'
-import RNFS from 'react-native-fs';
 
 const userData = [
     {
@@ -56,7 +55,7 @@ const userData = [
     },
 ]
 
-const test = ['hhsh', 'shhshsh', "sshhs"]
+const test= ['hhsh','shhshsh',"sshhs"]
 
 function HeaderComponent(params) {
     return (
@@ -79,14 +78,14 @@ function MessageBox({ data, isUser }) {
                 <View style={{ backgroundColor: isUser ? colorTheme.primaryColor : "white", elevation: 2, marginBottom: 2, borderRadius: 10, flexWrap: 'wrap' }}>
                     <View style={{ margin: 10 }}>
                         <Text style={{ color: isUser ? "white" : "black" }}>
-                            {data.msg}
+                            {data}
                         </Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: "center", marginTop: 5 }}>
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Image source={require('../../assets/img/health.jpg')} resizeMode='contain' style={[styles.image, { width: 25, height: 25, marginRight: 5 }]} />
-                        <Text>{data.msg}</Text>
+                        <Text>{data}</Text>
                     </View>
                     <Text>{data.time} Pm</Text>
                 </View>
@@ -101,88 +100,30 @@ export default function Message() {
     const [message, setMessage] = useState([])
     const socket = useRef()
 
-    const filePath = RNFS.DocumentDirectoryPath + '/message.txt';
-
-    const appendToFile = async (path, content) => {
-        try {
-            await RNFS.appendFile(path, content, 'utf8');
-            console.log('Content appended to file');
-        } catch (error) {
-            console.error('Error appending to file: ', error);
-        }
-    };
-
-    const deleteFile = async (path) => {
-        try {
-            await RNFS.unlink(path);
-            console.log("file deleted");
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const readFile = async (path) => {
-        try {
-            const content = await RNFS.readFile(path, 'utf8');
-            console.log('File content:', content);
-            // Split the content into messages
-            const messages = content.trim().split('\n').map(line => {
-                const [msg, time] = line.split('*');
-                return { msg, time };
-            });
-            setMessage(messages);
-        } catch (error) {
-            console.error('Error reading file: ', error);
-        }
-    };
-
     useEffect(() => {
-
-        const initializeFile = async () => {
-            try {
-                const fileExists = await RNFS.exists(filePath);
-                if (!fileExists) {
-                    await RNFS.writeFile(filePath, '', 'utf8');
-                    console.log('File created');
-                }
-                readFile(filePath);
-            } catch (error) {
-                console.error('Error initializing file: ', error);
-            }
-        };
-        initializeFile();
-
-        const socket = SocketIoClient('https://healthcare-3o61.onrender.com/');
-        socket.on('connect', () => {
-            console.log('Connected to server');
-        });
-        socket.on('disconnect', () => {
+        socket.current = SocketIoClient('https://healthcare-3o61.onrender.com/')
+        socket.current.on('connect', () => {
+            console.log('connected to server');
+        })
+        socket.current.on('disconnect', () => {
             console.log('Disconnected from server');
-        });
-        socket.on('chat-message', (msg) => {
-            setMessage(prevMessages => [...prevMessages, msg]);
-            const formattedMsg = `${msg.msg}*${msg.time}\n`; // Format message with '*'
-            appendToFile(filePath, formattedMsg);
-        });
-        readFile(filePath); // Read file when component mounts
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+        })
+        socket.current.on('chat-message', (msg) => {
+            setMessage((prevMessage)=>[
+                ...prevMessage,
+                msg
+            ])
+        })
+    }, [])
 
-    const sendMessage = async () => {
-        const currentTime = new Date().toLocaleTimeString();
-        const newMessage = { msg: input, time: currentTime };
-        setMessage([...message, newMessage]);
-        const formattedMsg = `${input}*${currentTime}\n`; // Format message with '*'
-        appendToFile(filePath, formattedMsg);
-        setInput('');
-    };
-
+    const sendMessage = () => {
+        socket.current.emit('chat-message', input)
+        setInput('')
+    }
     return (
         <View style={styles.container}>
             <ScrollView style={styles.subContainer}>
-                <Header children={HeaderComponent} leftIconName={true} titleMargin={60} textColor={"white"} marginTop={20} rightIconName={"ellipsis-vertical"} />
+                <Header children={HeaderComponent} leftIconName={true} titleMargin={60} textColor={"white"} marginTop={20} rightIconName={"ellipsis-vertical"} rightIconNavigate={'DocumentUpload'} />
             </ScrollView>
             <View style={{
                 width: "100%",
@@ -197,17 +138,16 @@ export default function Message() {
                 <ScrollView>
                     <Text style={[styles.bigText, { margin: 10, textAlign: "center", color: grayText.color, }]}>Today</Text>
                     {
-                        message.map((data, index) => {
-                            return (
-                                <View key={index}>
-                                    <MessageBox data={data} />
-                                </View>
-                            )
-                        })}
-                    {/* <Text>{fileWrite}</Text> */}
+                    message.map((data, index) => {
+                        return (
+                            <View key={index}>
+                                <MessageBox data={data} />
+                            </View>
+                        )
+                    })}
                 </ScrollView>
                 <View style={styles.textInput}>
-                    <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} onPress={()=>deleteFile(filePath)} />
+                    <MaterialIcons name="mic" color={colorTheme.primaryColor} size={25} />
                     <TextInput
                         placeholder='Type Message here..'
                         onChangeText={setInput}
@@ -217,7 +157,6 @@ export default function Message() {
                     />
                     <MaterialIcons name="send" color={colorTheme.primaryColor} size={25} style={{ marginRight: 5 }} onPress={sendMessage} />
                 </View>
-                {/* <Text>{fileWrite}</Text> */}
             </View>
         </View >
     )

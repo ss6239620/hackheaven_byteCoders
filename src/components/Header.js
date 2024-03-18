@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { blackText, colorTheme } from '../constant'
 import { useNavigation } from '@react-navigation/native';
 
-export default function Header({ header, leftIconName, rightIconName, titleMargin, textColor, marginTop, children: Children, childrenStyle, isModal, setModalVisible }) {
+export default function Header({ header, leftIconName, rightIconName, titleMargin, textColor, marginTop, children: Children, childrenStyle, isModal, setModalVisible, rightIconNavigate }) {
     const navigation = useNavigation()
     return (
         <View style={{ flexDirection: "row", justifyContent: "space-between", height: 48, alignItems: 'center', marginTop: marginTop ? marginTop : 5, }}>
@@ -29,7 +29,7 @@ export default function Header({ header, leftIconName, rightIconName, titleMargi
             {rightIconName
                 ?
                 <View style={{ width: 35, height: 35, backgroundColor: "white", justifyContent: "center", alignItems: "center", borderRadius: 50, borderWidth: 1, borderColor: colorTheme.borderColor }}>
-                    <Ionicons name={rightIconName} size={25} color={colorTheme.primaryColor} />
+                    <Ionicons name={rightIconName} size={25} color={colorTheme.primaryColor} onPress={() => { rightIconNavigate ? navigation.navigate(rightIconNavigate) : null }} />
                 </View>
                 :
                 null

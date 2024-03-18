@@ -16,6 +16,7 @@ import PatientDetails from '../AppointMents/PatientDetails'
 import PaymentMethod from '../AppointMents/PaymentMethod'
 import SuccesfullPayment from '../AppointMents/SuccesfullPayment'
 import Message from '../Chat/Messages'
+import DocumentUpload from '../Chat/DocumentUpload'
 import VideoCall from '../Chat/VideoCall'
 import CancelBooking from '../AppointMents/CancelBooking'
 import RescheduledAppointment from '../AppointMents/ReschedledAppointment'
@@ -94,6 +95,7 @@ export default function App() {
         <Stack.Screen name='Survey' component={Survey} options={{ headerShown: false }} />
         <Stack.Screen name='HowYourDay' component={HowYourDay} options={{ headerShown: false }} />
         <Stack.Screen name='Helpless' component={Helpless} options={{ headerShown: false }} />
+        <Stack.Screen name='DocumentUpload' component={DocumentUpload} options={{ headerShown: false }} />
       </Stack.Navigator>
   )
 }
