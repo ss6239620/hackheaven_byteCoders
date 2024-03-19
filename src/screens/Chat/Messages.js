@@ -101,7 +101,7 @@ export default function Message() {
     const socket = useRef()
 
     useEffect(() => {
-        socket.current = SocketIoClient('https://healthcare-3o61.onrender.com/')
+        socket.current = SocketIoClient('http://localhost:8000/')
         socket.current.on('connect', () => {
             console.log('connected to server');
         })
