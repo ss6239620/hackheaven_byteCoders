@@ -5,6 +5,7 @@ import Header from '../../components/Header'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import SocketIoClient from 'socket.io-client'
 import RNFS from 'react-native-fs'
+import VideoModal from '../../components/Modal/VideoModal'
 
 const test = ['hhsh', 'shhshsh', "sshhs"]
 
@@ -12,9 +13,11 @@ function HeaderComponent(params) {
     return (
         <View style={{ flexDirection: "row", width: "100%" }}>
             <Image source={require('../../assets/img/health.jpg')} resizeMode='contain' style={styles.image} />
-            <View style={{ justifyContent: "center" }}>
-                <Text style={[styles.bigText, { color: "white" }]}>Carla Schoen</Text>
-                <Text style={{ color: "white", fontSize: 13 }}>online</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ justifyContent: "center" }}>
+                    <Text style={[styles.bigText, { color: "white" }]}>Carla Schoen</Text>
+                    <Text style={{ color: "white", fontSize: 13 }}>online</Text>
+                </View>
             </View>
         </View>
     )
@@ -52,7 +55,7 @@ export default function Message() {
     const [message, setMessage] = useState([])
     const socket = useRef()
     const [fileData, setFileData] = useState();
-    // const [appendedMessage, setAppendedMessage] = useState(false)
+    const [modal, setmodal] = useState(false)
 
     const filePath = RNFS.DocumentDirectoryPath + "/Message.txt"; //absolute path of our file
 
@@ -147,10 +150,14 @@ export default function Message() {
             console.log('Disconnected from server');
         })
         socket.current.on('chat-message', (msg) => {
+            console.log(msg);
             setMessage((prevMessage) => [
                 ...prevMessage,
                 msg
             ])
+            const message = `<s><ms>${msg.message}<me><ts>${msg.time}<te><e>`
+            appendFile(filePath, message)
+
         })
     }, [])
 
@@ -164,10 +171,19 @@ export default function Message() {
         appendFile(filePath, message)
         setInput('')
     }
+
+    function handleVideoPress(params) {
+        setmodal(true)
+    }
     return (
         <View style={styles.container}>
+            {modal
+                ?
+                <VideoModal modalVisible={modal} setModalVisible={setmodal} />
+                : null
+            }
             <ScrollView style={styles.subContainer}>
-                <Header children={HeaderComponent} leftIconName={true} titleMargin={60} textColor={"white"} marginTop={20} rightIconName={"ellipsis-vertical"} rightIconNavigate={'DocumentUpload'} />
+                <Header children={HeaderComponent} leftIconName={true} titleMargin={60} textColor={"white"} marginTop={20} rightIconName={"videocam"} rightIconNavigate={'DocumentUpload'} onPressRightIcon={handleVideoPress} />
             </ScrollView>
             <View style={{
                 width: "100%",
@@ -196,10 +212,10 @@ export default function Message() {
                         placeholder='Type Message here..'
                         onChangeText={setInput}
                         value={input}
-                        style={{ width: "80%" }}
+                        style={{ width: "80%", }}
                         multiline
                     />
-                    <MaterialIcons name="send" color={colorTheme.primaryColor} size={25} style={{ marginRight: 5 }} onPress={sendMessage} />
+                    <MaterialIcons name="send" color={colorTheme.primaryColor} size={25} style={{}} onPress={sendMessage} />
                 </View>
             </View>
         </View >
@@ -243,7 +259,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         alignSelf: "center",
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        marginBottom: 10
     },
     image: {
         width: 60,

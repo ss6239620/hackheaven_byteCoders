@@ -21,16 +21,18 @@ import IconContainer from './IconContainer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import InCallManager from 'react-native-incall-manager';
 
-export default function App({ }) {
+export default function App({ route}) {
   const [localStream, setlocalStream] = useState(null);
 
   const [remoteStream, setRemoteStream] = useState(null);
 
   const [type, setType] = useState('JOIN');
 
+  const { callId,date,time  } = route.params;
+  // console.log(callId,date,time);
 
   const [callerId] = useState(
-    '346773'
+    callId
   );
   // console.log(callerId);
   
