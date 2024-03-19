@@ -9,7 +9,7 @@ const color = {
 
 const colorTheme = {
     appBackGroundColor:"white",
-    primaryColor: "#74b35b",
+    primaryColor: "#407CE2",
     secondaryColor: "#46703b",
     accentColor: "#FFC107",
     // backgroundColor: "#FFFFFF",
