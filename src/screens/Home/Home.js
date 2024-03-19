@@ -2,7 +2,6 @@ import { Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity,
 import React, { useEffect, useState } from 'react'
 import { API_URL, colorTheme } from '../../constant'
 import DoctorCard from '../../components/DoctorCard'
-import ArticleCard from '../../components/ArticleCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
@@ -17,15 +16,14 @@ import AddYourTakModal from '../../components/Modal/AddTaskModal'
 import SeeAllTaskModal from '../../components/Modal/SeeAllTaskModal'
 import JournalModal from '../../components/Modal/JournalModal'
 import { sendSmsData } from '../../components/SendSMS'
-import { articlesServices } from '../../services/Article'
 import QuoteOfTheDay from '../../components/QuoteOfTheDay'
 import YoutubeVideos from '../../components/YoutubeVideos'
-import axios from 'axios'
-import { BlogServices } from '../../services/BlogsServices'
-import LottieView from 'lottie-react-native'
 import { YoutubeHomeData } from '../../assets/data/YoutubeData'
 import YoutubeModal from '../../components/Modal/YoutubeModal'
 import BlogScreenModal from '../../components/Modal/BlogScreenModal'
+import LottieView from 'lottie-react-native'
+import UnderLine from '../../components/UnderLine'
+import ProgressBar from '../../components/AnimatedBar'
 
 const data = [
   {
@@ -53,75 +51,33 @@ const SMSDATA = [
   },
 ]
 
-function Test(params) {
-  // PayNow()
-}
-
 function SendSOS(params) {
   sendSmsData(SMSDATA)
 
 }
 
-const SCORE_POINTER = 0
 
 export default function Home({ navigation }) {
 
   const [article, setarticle] = useState({})
   const [articleLoading, setarticleLoading] = useState(false)
   const [search, setSearch] = useState('')
-  const [isPost, setIsPost] = useState(false)
   const [modalVisible, setModalVisible] = useState(false);
   const [filterModal, setFilterModal] = useState(false)
   const [notificationModal, setNotificationModal] = useState(false)
   const [categoryModalVisible, setcategoryModalVisible] = useState(false);
-  const [topDoctorModal, setTopDoctorModal] = useState(false); 
+  const [topDoctorModal, setTopDoctorModal] = useState(false);
   const [topHosPitalModal, setTopHospitalModal] = useState(false);
   const [AddTaskModal, setAddTaskModal] = useState(false);
   const [supportiveContent, setSupportiveContent] = useState(false);
   const [seeAllTask, setSeeAllTask] = useState(false);
   const [journalModal, setjournalModalModal] = useState(false);
-  const [score, setScore] = useState(0);
-  const [isBatchLoading, setisBatchLoading] = useState(true)
   const [blogScreenModal, setBlogScreenModal] = useState(false)
   const [ModalData, setBlogModalData] = useState({
     title: '',
     desc: '',
     img: ''
   })
-  const [currentLevel, setCurrentLevel] = useState(0); // Initialize with level 0
-
-  const levels = [
-    { threshold: 150, source: require('../../assets/json/level-intial-batch.json') },
-    { threshold: 500, source: require('../../assets/json/level-0-batch.json') },
-    { threshold: 2000, source: require('../../assets/json/level-1-batch.json') },
-    { threshold: 5000, source: require('../../assets/json/level-2-batch.json') },
-    { threshold: 10000, source: require('../../assets/json/level-3-batch.json') },
-    { threshold: 20000, source: require('../../assets/json/level-5-batch.json') },
-  ];
-
-
-  useEffect(() => {
-    articlesServices.FetchArticles().then((
-      res => {
-        setarticle(res.data.articles)
-        setarticleLoading(true)
-      }
-    )).catch(err => { console.log('error fetching data'); })
-
-    BlogServices.getScore().then(
-      res => {
-        setScore(res.data[0].score)
-        setisBatchLoading(false)
-      }
-    ).catch()
-  }, [])
-
-  useEffect(() => {
-    // Find the current level based on the user's score
-    const level = levels.findIndex(level => score < level.threshold);
-    setCurrentLevel(level === -1 ? levels.length - 1 : level); // If userScore exceeds the highest threshold, set to the last level
-  }, [score]);
-
 
   return (
     <View style={styles.container}>
@@ -216,13 +172,12 @@ export default function Home({ navigation }) {
         </>
         <View style={{ width: "90%", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <View>
-            <Text style={{ color: "gray" }}>Location</Text>
             <Pressable
               style={{ flexDirection: "row", alignItems: 'center' }}
               onPress={() => setModalVisible(true)}
             >
               <MaterialIcons name="location-pin" color={colorTheme.primaryColor} size={25} />
-              <Text style={{ color: "black", fontSize: 15, fontWeight: "700" }}>New York,USA</Text>
+              <Text style={{ color: "black", fontSize: 15, fontWeight: "700" }}>ProjectHub</Text>
               <MaterialIcons name="keyboard-arrow-down" color={colorTheme.primaryColor} size={25} />
             </Pressable>
           </View>
@@ -233,42 +188,84 @@ export default function Home({ navigation }) {
             <FontAwesome name="pencil-square-o" color={colorTheme.primaryColor} size={25} style={{ marginRight: 10 }} onPress={() => setjournalModalModal(true)} />
           </View>
         </View>
-        {isBatchLoading ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <LottieView
-              source={levels[currentLevel].source} // Dynamically select the animation source based on the current level
-              autoPlay
-              loop
-              style={{ width: 100, height: 100, backgroundColor: 'white' }}
-            />
-            <View style={{ width: '60%' }}>
-              <Text
-                style={{ textAlign: 'center', fontSize: 18, color: 'black', fontWeight: 'bold', fontStyle: 'italic' }}
-                numberOfLines={2}
-              >
-                {`Congrats! You are level ${currentLevel} now`}
-              </Text>
+        {/* dashboard start here  */}
+        <View style={{ width: '90%', backgroundColor: 'white', elevation: 4, padding: 10, marginBottom: 10, borderRadius: 10, borderTopEndRadius: 50, marginTop: 15 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ height: 40, backgroundColor: colorTheme.borderColor, width: 2, marginRight: 10 }} />
+                <View>
+                  <Text style={[styles.boldText]}>TotalTravelling</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <MaterialIcons name="directions-car-filled" color={colorTheme.primaryColor} size={25} style={{}} />
+                    <Text>45 <Text>km</Text></Text>
+                  </View>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', marginTop: 30 }}>
+                <View style={{ height: 40, backgroundColor: colorTheme.borderColor, width: 2, marginRight: 10 }} />
+                <View>
+                  <Text style={[styles.boldText]}>TotalPooling</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <MaterialIcons name="directions-car-filled" color={colorTheme.primaryColor} size={25} style={{}} />
+                    <Text>45 km</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+            {/* <View style={{ marginRight: 0, width: 100, height: 100, alignItems: 'center', justifyContent: 'center', borderWidth: 5, borderRadius: 50, borderRightColor: 'green',borderLeftColor:colorTheme.borderColor,borderTopColor:'green',borderBottomColor:'green' }}>
+              <Text style={[styles.boldText]}>Carbon FootPrint</Text>
+              <Text>Reduced</Text>
+            </View> */}
+            <View>
+              <LottieView
+                source={require('../../assets/json/bubble.json')}
+                autoPlay
+                loop
+                style={{ width: 125, height: 125 }}
+              />
+              <View style={{}}>
+                <Text style={[styles.boldText, {}]}>Carbon FootPrint</Text>
+                <Text style={[styles.smallText, { color: 'green' }]}>144g/km</Text>
+              </View>
             </View>
           </View>
-        )}
-        <View style={{ width: '90%', marginBottom: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <View style={styles.textInput}>
-            <MaterialIcons name="search" color={colorTheme.primaryColor} size={25} />
-            <TextInput
-              placeholder='Search'
-              onChangeText={(text) => setSearch(text)}
-              value={search}
-              style={{ height: 48, width: "92%" }}
-            />
+          <UnderLine color={colorTheme.borderColor} thickness={2} marginTop={10} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+            <View>
+              <Text style={[styles.boldText]}>Total Rides</Text>
+              {/* <UnderLine color={colorTheme.borderColor} thickness={2} marginTop={10} /> */}
+              <ProgressBar progress={0.75} />
+              <Text>27 Rides</Text>
+            </View>
+            <View>
+              <Text style={[styles.boldText]}>TotalPooling</Text>
+              {/* <UnderLine color={colorTheme.borderColor} thickness={2} marginTop={10} /> */}
+              <ProgressBar progress={0.75} />
+              <Text>27 Rides</Text>
+            </View>
+            <View>
+              <Text style={[styles.boldText]}>Total</Text>
+              {/* <UnderLine color={colorTheme.borderColor} thickness={2} marginTop={10} /> */}
+              <ProgressBar progress={0.25} />
+              <Text>54 Rides</Text>
+            </View>
           </View>
-          <Pressable
-            style={{ width: 45, height: 45, backgroundColor: colorTheme.primaryColor, justifyContent: "center", alignItems: "center", borderRadius: 10 }}
-            onPress={() => { setFilterModal(true) }}
-          >
-            <FontAwesome name="sliders" color="white" size={25} />
-          </Pressable>
+        </View>
+
+        <View style={{ width: '90%', marginVertical: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AddProject')}
+
+              style={{ backgroundColor: "white", borderWidth: 1, borderColor: colorTheme.primaryColor, borderRadius: 50 }}>
+              <Text numberOfLines={2} style={[styles.blueText, { paddingHorizontal: 30, paddingVertical: 10 }]}>Create Project</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ backgroundColor: colorTheme.primaryColor, borderRadius: 50 }}>
+              <Text numberOfLines={2} style={[styles.blueText, { color: "white", paddingHorizontal: 30, paddingVertical: 10 }]}>View Project</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         {/* youtube webview  */}
         {/* <View style={{ width: '90%', marginTop: 10, height: 600 }}>
@@ -284,9 +281,6 @@ export default function Home({ navigation }) {
           />
         </View> */}
         {/* youtube webview ended */}
-        <View style={{ marginBottom: 15, width: '90%' }}>
-          <QuoteOfTheDay />
-        </View>
         <View style={{ width: '90%', }}>
           <View style={{ flexDirection: "row", justifyContent: 'space-between', padding: 10 }}>
             <Text style={[styles.grayText, { color: 'black' }]}>Your Todos...</Text>
@@ -298,20 +292,11 @@ export default function Home({ navigation }) {
               <TouchableOpacity
                 onPress={() => { setAddTaskModal(true) }}
                 style={{ backgroundColor: colorTheme.primaryColor, justifyContent: 'center', alignItems: 'center', borderRadius: 30, elevation: 10 }}>
-                <MaterialIcons name="add" color={"white"} size={25} style={{ padding: 10 }} />
+                <MaterialIcons name="add" color={"white"} sizae={25} style={{ padding: 10 }} />
               </TouchableOpacity>
             </View>
           </View>
         </View>
-        <View style={{ width: '90%', flexDirection: "row", justifyContent: 'space-between', marginTop: 10 }}>
-          <Text style={[styles.grayText, {}]}>Supportive Content</Text>
-          <Text
-            onPress={() => { setSupportiveContent(true) }}
-            style={[{ color: colorTheme.primaryColor, fontSize: 15 }]}>See All</Text>
-        </View>
-        <Carousel data={YoutubeHomeData}>
-          <YoutubeVideos />
-        </Carousel>
         <View style={{ width: '90%', flexDirection: "row", justifyContent: 'space-between' }}>
           <Text style={[styles.grayText, { marginBottom: 8, }]}>Top Specialist</Text>
           <Text
@@ -340,32 +325,6 @@ export default function Home({ navigation }) {
               <FontAwesome5 name="brain" color={colorTheme.primaryColor} size={25} />
             </View>
           </View>
-        </View>
-        <View style={[{ width: "90%", }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity
-              style={{ backgroundColor: isPost ? colorTheme.primaryColor : 'white', width: 120, height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: colorTheme.primaryColor }}
-              onPress={() => { setIsPost(true) }}
-            >
-              <Text style={{ color: isPost ? "white" : 'black' }}>Posts</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ backgroundColor: isPost ? "white" : colorTheme.primaryColor, width: 120, height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: colorTheme.primaryColor }}
-              onPress={() => {
-                setIsPost(false)
-                // Test()
-              }}
-            >
-              <Text style={{ color: isPost ? "black" : 'white' }}>Articles</Text>
-            </TouchableOpacity>
-          </View>
-          {articleLoading ? article.map((obj, index) => (
-            <ArticleCard setBlogModalData={setBlogModalData} key={index} title={obj.title} desc={obj.description} image={obj.urlToImage} modal={blogScreenModal} setModal={setBlogScreenModal} />
-          )) :
-            <View style={{ alignItems: 'center', marginBottom: 20 }}>
-              <ActivityIndicator size="large" />
-            </View>
-          }
         </View>
       </ScrollView >
     </View>

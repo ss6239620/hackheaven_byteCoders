@@ -46,6 +46,7 @@ import ChatBot from '../Chat/ChatBot'
 import Survey from '../Survey/Survey'
 import HowYourDay from '../Survey/HowYourDay'
 import Helpless from '../Survey/Helpless'
+import AddProject from '../../components/AddProject'
 
 const Stack = createNativeStackNavigator()
 
@@ -54,7 +55,7 @@ export default function App() {
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name='Splash' component={Splash} options={{ headerShown: false }} />
         <Stack.Screen name='GetStarted' component={GetStarted} options={{ headerShown: false }} />
-        <Stack.Screen name='SignUp' component={ProfileComplete} options={{ headerShown: false }} />
+        <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name='ProfileComplete' component={ProfileComplete} options={{ headerShown: false }} />
         <Stack.Screen name='DoctorRegister' component={DoctorRegister} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
@@ -98,6 +99,7 @@ export default function App() {
         <Stack.Screen name='HowYourDay' component={HowYourDay} options={{ headerShown: false }} />
         <Stack.Screen name='Helpless' component={Helpless} options={{ headerShown: false }} />
         <Stack.Screen name='DocumentUpload' component={DocumentUpload} options={{ headerShown: false }} />
+        <Stack.Screen name='AddProject' component={AddProject} options={{ headerShown: false }} />
       </Stack.Navigator>
   )
 }

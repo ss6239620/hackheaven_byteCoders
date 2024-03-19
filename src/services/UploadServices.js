@@ -1,6 +1,7 @@
 import axios from "axios"
-import { API_URL_Upload, UPLOAD_SERVER } from "../constant";
+import { API_URL, API_URL_Upload, UPLOAD_SERVER } from "../constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { navigate } from "./navRef";
 
 function FetchImages() {
     return new Promise((resolve, reject) => {
@@ -36,7 +37,7 @@ async function ProfileComplete(fullName,dob,mobileNo,bio,resume) {
     const body = {
         fullname: 'fullName',
         dob: '2024-05-15',
-        mobilno: 'mobileNo',
+        mobilno: '75656677',
         skills: "abc, bcd, sdnk,mls,sdc",
         typeofuser: 'student',
         bio: 'bio',
@@ -50,19 +51,20 @@ async function ProfileComplete(fullName,dob,mobileNo,bio,resume) {
     console.log(body);
     return new Promise((resolve, reject) => {
         console.log(token);
-        axios.post(`${API_URL_Upload}/user/updateuserprofile`,body,config
+        axios.post(`${API_URL}/user/updateuserprofile`,body,config
         ).then(async (response) => {
             try {
                 // await setAuthAsyncStorage(response)
                 console.log(response.data);
+                navigate('SuccesfullRegistration')
                 resolve(response)
                 // navigate('Olddisease')
             } catch (err) {
-                console.log(err.data);
+                console.log('err',err.data);
                 reject(e)
             }
         }).catch((err) => {
-            console.log(err.response.data);
+            console.log('err',err.response.data);
             reject(err)
         })
     })

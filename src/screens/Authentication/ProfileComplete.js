@@ -27,10 +27,9 @@ const Profile = () => {
             const res = await DocumentPicker.pickSingle({
                 type: [DocumentPicker.types.pdf],
             });
-            
+
             setresume(res)
             // console.log('here');
-            uploadServices.ProfileComplete(fullName,dob,mobileNo,bio,resume)
 
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
@@ -75,102 +74,111 @@ const Profile = () => {
         setMobileNo(text);
     };
 
+    function handleClick(params) {
+        uploadServices.ProfileComplete(fullName, dob, mobileNo, bio, resume)
+    }
     return (
-        <ScrollView contentContainerStyle={{ width: '95%', alignSelf: 'center', backgroundColor: colorTheme.appBackGroundColor }}>
-            <View style={[styles.txt, { alignItems: 'center' }]}>
-                <LottieView
-                    style={{ width: 70, height: 70, marginTop: -8, marginLeft: -10 }}
-                    source={require('../../assets/json/appData/siddhesh1.json')}
-                    autoPlay
-                    loop
-                />
-                <Text style={styles.title}>Setup Your Profile</Text>
-            </View>
-            <View style={styles.all}>
-                <View style={styles.inputContainer}>
-                    <MaterialCommunityIcons style={{ marginLeft: 8 }} name="account-details" size={25} color="black" />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Full Name"
-                        value={fullName}
-                        onChangeText={logFullName}
-                        placeholderTextColor="grey"
+        <View style={{ flex: 1, backgroundColor: colorTheme.appBackGroundColor }}>
+            <ScrollView contentContainerStyle={{ width: '95%', alignSelf: 'center', }}>
+                <View style={[styles.txt, { alignItems: 'center' }]}>
+                    <LottieView
+                        style={{ width: 70, height: 70, marginTop: -8, marginLeft: -10 }}
+                        source={require('../../assets/json/appData/siddhesh1.json')}
+                        autoPlay
+                        loop
                     />
+                    <Text style={styles.title}>Setup Your Profile</Text>
                 </View>
-                <View style={styles.inputContainer}>
-                    <Fontisto style={styles.icon} name="date" size={20} color="black" />
-                    <TextInput
-                        style={styles.date}
-                        placeholder="DOB"
-                        value={dob}
-                        onChangeText={logDob}
-                        placeholderTextColor="grey"
-                    />
+                <View style={styles.all}>
+                    <View style={styles.inputContainer}>
+                        <MaterialCommunityIcons style={{ marginLeft: 8 }} name="account-details" size={25} color="black" />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Full Name"
+                            value={fullName}
+                            onChangeText={logFullName}
+                            placeholderTextColor="grey"
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Fontisto style={styles.icon} name="date" size={20} color="black" />
+                        <TextInput
+                            style={styles.date}
+                            placeholder="DOB"
+                            value={dob}
+                            onChangeText={logDob}
+                            placeholderTextColor="grey"
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Entypo style={styles.icon} name="mobile" size={25} color="black" />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Mobile no."
+                            value={mobileNo}
+                            onChangeText={logMobileNo}
+                            placeholderTextColor="grey"
+                        />
+                    </View>
+                    <View>
+                        {skills.map((skill, index) => (
+                            <View key={index} style={styles.inputContainer}>
+                                <MaterialIcons style={styles.icon} name="email" size={25} color="black" />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder={skill}
+                                    value={skill}
+                                    onChangeText={(text) => handleSkillChange(text, index)}
+                                    placeholderTextColor="grey"
+                                />
+                                {index === skills.length - 1 && (
+                                    <TouchableOpacity style={{ marginLeft: 10 }} onPress={addSkillInput}>
+                                        <Ionicons style={{ marginRight: 10 }} name="add" size={24} color="black" />
+                                    </TouchableOpacity>
+                                )}
+                                {index !== 0 && (
+                                    <TouchableOpacity onPress={() => removeSkillInput(index)}>
+                                        <AntDesign style={{ marginLeft: 10 }} name="close" size={20} color="black" />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        ))}
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                        <TouchableOpacity style={[styles.button, studentPressed ? styles.buttonPressed : null]} onPress={() => setStudentPressed(!studentPressed)}>
+                            <Text style={styles.sub}>STUDENT</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.pbutton, professorPressed ? styles.buttonPressed : null]} onPress={() => setProfessorPressed(!professorPressed)}>
+                            <Text style={styles.prof}>PROFESSOR</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            multiline={true}
+                            maxLength={200}
+                            placeholder='Short Bio/About me'
+                            value={bio}
+                            onChangeText={setBio}
+                            placeholderTextColor="grey"
+                            style={styles.bioInput}
+                        />
+                    </View>
                 </View>
-                <View style={styles.inputContainer}>
-                    <Entypo style={styles.icon} name="mobile" size={25} color="black" />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Mobile no."
-                        value={mobileNo}
-                        onChangeText={logMobileNo}
-                        placeholderTextColor="grey"
-                    />
+                <View >
+                    <View style={styles.cv}>
+                        <Text style={styles.upload}>Upload Your Resume</Text>
+                        <TouchableOpacity style={styles.bg} onPress={handleUploadResume}>
+                            <Ionicons style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: 2 }} name="add" size={35} color="white" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View>
-                    {skills.map((skill, index) => (
-                        <View key={index} style={styles.inputContainer}>
-                            <MaterialIcons style={styles.icon} name="email" size={25} color="black" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder={skill}
-                                value={skill}
-                                onChangeText={(text) => handleSkillChange(text, index)}
-                                placeholderTextColor="grey"
-                            />
-                            {index === skills.length - 1 && (
-                                <TouchableOpacity style={{ marginLeft: 10 }} onPress={addSkillInput}>
-                                    <Ionicons style={{ marginRight: 10 }} name="add" size={24} color="black" />
-                                </TouchableOpacity>
-                            )}
-                            {index !== 0 && (
-                                <TouchableOpacity onPress={() => removeSkillInput(index)}>
-                                    <AntDesign style={{ marginLeft: 10 }} name="close" size={20} color="black" />
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    ))}
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                    <TouchableOpacity style={[styles.button, studentPressed ? styles.buttonPressed : null]} onPress={() => setStudentPressed(!studentPressed)}>
-                        <Text style={styles.sub}>STUDENT</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.pbutton, professorPressed ? styles.buttonPressed : null]} onPress={() => setProfessorPressed(!professorPressed)}>
-                        <Text style={styles.prof}>PROFESSOR</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        multiline={true}
-                        maxLength={200}
-                        placeholder='Short Bio/About me'
-                        value={bio}
-                        onChangeText={setBio}
-                        placeholderTextColor="grey"
-                        style={styles.bioInput}
-                    />
-                </View>
-            </View>
-            <View >
-                <View style={styles.cv}>
-                    <Text style={styles.upload}>Upload Your Resume</Text>
-                    <TouchableOpacity style={styles.bg} onPress={handleUploadResume}>
-                        <Ionicons style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: 2 }} name="add" size={35} color="white" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={{ marginTop: 100 }} />
-        </ScrollView>
+                <TouchableOpacity style={{ backgroundColor: colorTheme.primaryColor, width: '100%', height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+
+                    <Text style={{ color: 'white' }} onPress={() => handleClick()}>Submit</Text>
+                </TouchableOpacity>
+                {/* <View style={{ marginTop: 100 }} />  */}
+            </ScrollView>
+        </View>
     );
 }
 
