@@ -9,10 +9,10 @@ import DocumentPicker from 'react-native-document-picker'
 import Octicons from 'react-native-vector-icons/Octicons'
 import LottieView from 'lottie-react-native';
 import { colorTheme } from '../constant'
+import { projectServices } from '../services/Project'
 
 const Details = () => {
     const [selectedTab, setSelectedTab] = useState(0);
-    const [selectedOne, setSelectedOne] = useState(0);
     const [skills, setSkills] = useState(['']);
     const [idea, setIdea] = useState('');
     const [desc, setDesc] = useState('');
@@ -23,6 +23,11 @@ const Details = () => {
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [selDocument, setDocument] = useState(null);
     const [numMilestones, setNumMilestones] = useState('');
+    const [projectName, setprojectName] = useState('')
+    const [fundedBy, setfundedBy] = useState('')
+    const [ProjectType, setProjectType] = useState('')
+    const [projectDeadline, setprojectDeadline] = useState('')
+    const [github, setgithub] = useState('')
     const [milestones, setMilestones] = useState([{ milestone: '', deadline: '' }]);
     const [showMilestones, setShowMilestones] = useState(false);
 
@@ -103,6 +108,16 @@ const Details = () => {
         }
     };
 
+    function handleProjectType(val,type) {
+        setSelectedTab(val)
+        setProjectType(type)
+    }
+
+    function handleClick() {
+        console.log('here');
+        projectServices.AddProject(projectName,ProjectType,skills,idea,features,desc,goals,outcome,'yes',fundedBy,stack,'4',milestones,projectDeadline,github)
+    }
+
     return (
         <View style={{ flex: 1, backgroundColor: colorTheme.appBackGroundColor, }}>
             <ScrollView contentContainerStyle={{ width: '95%', alignSelf: 'center' }}>
@@ -121,6 +136,7 @@ const Details = () => {
                         <FontAwesome style={{ marginLeft: 5 }} name="address-book-o" size={24} color="black" />
                         <TextInput
                             style={styles.input}
+                            onChangeText={(text) => { setprojectName(text) }}
                             placeholder="Project Name"
                             placeholderTextColor="grey"
                         />
@@ -130,10 +146,10 @@ const Details = () => {
                     </View>
                     <View style={{ marginTop: 10, backgroundColor: 'white', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                         <View style={{ width: '100%', height: 50, borderRadius: 10, flexDirection: 'row', alignItems: 'center', paddingLeft: 2, paddingRight: 2, justifyContent: 'space-between' }}>
-                            <TouchableOpacity onPress={() => { setSelectedTab(0) }} style={{ borderWidth: 1, borderColor: colorTheme.borderColor, width: '45%', height: '90%', backgroundColor: selectedTab == 0 ? '#407ce2' : 'white', borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => { handleProjectType(0,'hardware') }} style={{ borderWidth: 1, borderColor: colorTheme.borderColor, width: '45%', height: '90%', backgroundColor: selectedTab == 0 ? '#407ce2' : 'white', borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: selectedTab == 0 ? '#fff' : '#000', fontSize: 18, fontWeight: 'bold' }}>Hardware</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { setSelectedTab(1) }} style={{ borderWidth: 1, borderColor: colorTheme.borderColor, width: '45%', height: '90%', backgroundColor: selectedTab == 1 ? '#407ce2' : 'white', borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => { handleProjectType(1,'software') }} style={{ borderWidth: 1, borderColor: colorTheme.borderColor, width: '45%', height: '90%', backgroundColor: selectedTab == 1 ? '#407ce2' : 'white', borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: selectedTab == 1 ? '#fff' : '#000', fontSize: 18, fontWeight: 'bold' }}>Software</Text>
                             </TouchableOpacity>
                         </View>
@@ -249,6 +265,7 @@ const Details = () => {
                             style={styles.input}
                             placeholder="If Funded then by whom? (NA if no)"
                             placeholderTextColor="grey"
+                            onChangeText={(text) => { setfundedBy(text) }}
                         />
                     </View>
                     <View style={styles.inputContainer}>
@@ -303,11 +320,12 @@ const Details = () => {
                             style={styles.input}
                             placeholder="Project Deadline Eg.(07-11-2023)"
                             placeholderTextColor="grey"
+                            onChangeText={(text) => { setprojectDeadline(text) }}
                         />
                     </View>
                     <View style={styles.cv}>
                         <Text style={styles.upload}>Upload Flowchart</Text>
-                        <TouchableOpacity style={styles.bg} onPress={openDocumentPicker}>
+                        <TouchableOpacity style={styles.bg} onPress={handleClick}>
                             <Ionicons style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 2 }} name="add" size={35} color="white" />
                         </TouchableOpacity>
                     </View>
@@ -329,10 +347,16 @@ const Details = () => {
                             style={styles.input}
                             placeholder="Github Repository link"
                             placeholderTextColor="grey"
+                            onChangeText={(text) => { setgithub(text) }}
                         />
                     </View>
                 </View>
                 <View style={{ marginTop: 100 }} />
+                <TouchableOpacity 
+                onPress={() => handleClick()}
+                style={{ backgroundColor: colorTheme.primaryColor, width: '100%', height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+                    <Text style={{ color: 'white' }} >Submit</Text>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     )

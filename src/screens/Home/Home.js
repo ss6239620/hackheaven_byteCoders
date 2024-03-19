@@ -24,6 +24,7 @@ import BlogScreenModal from '../../components/Modal/BlogScreenModal'
 import LottieView from 'lottie-react-native'
 import UnderLine from '../../components/UnderLine'
 import ProgressBar from '../../components/AnimatedBar'
+import { projectServices } from '../../services/Project'
 
 const data = [
   {
@@ -59,9 +60,8 @@ function SendSOS(params) {
 
 export default function Home({ navigation }) {
 
-  const [article, setarticle] = useState({})
-  const [articleLoading, setarticleLoading] = useState(false)
-  const [search, setSearch] = useState('')
+  const [peojectData, setpeojectData] = useState([])
+  const [loading, setisLoading] = useState(true)
   const [modalVisible, setModalVisible] = useState(false);
   const [filterModal, setFilterModal] = useState(false)
   const [notificationModal, setNotificationModal] = useState(false)
@@ -78,6 +78,15 @@ export default function Home({ navigation }) {
     desc: '',
     img: ''
   })
+
+  useEffect(() => {
+    projectServices.FetchAllUserProject().then(res => {
+      setpeojectData(res.data)
+      console.log(res.data);
+      setisLoading(false)
+    })
+  }, [])
+
 
   return (
     <View style={styles.container}>
@@ -326,6 +335,17 @@ export default function Home({ navigation }) {
             </View>
           </View>
         </View>
+        {loading ? <Text style={{marginBottom:20}}>loading....</Text> :
+          <>
+          {peojectData.length===0 &&<Text style={{marginBottom:20}}>Nothing to show</Text>}
+          {peojectData.map((dat,key)=>(
+            <View key={key} style={{ marginBottom: 20, width: '90%', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', elevation: 2, borderWidth: 1, borderColor: colorTheme.borderColor, borderRadius: 10 }}>
+              <Text style={[styles.boldText, { position: 'absolute', top: 10, zIndex: 10, left: 10, fontSize: 20, color: 'white' }]}>{dat.projectname}</Text>
+              <Image source={require('../../assets/img/card2.jpg')} style={{ width: '100%', height: 150, resizeMode: 'cover', }} />
+            </View>
+          ))}
+          </>
+        }
       </ScrollView >
     </View>
   )
