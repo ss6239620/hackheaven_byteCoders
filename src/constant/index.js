@@ -38,12 +38,16 @@ const blueText = {
     fontWeight: "600",
 }
 
-const API_URL='https://telehealth.cyclic.app/api'
+const API_URL='https://backend-projectmanagement-1.onrender.com/api'
 const API_URL_AIML='http://127.0.0.1:8000/'
+const API_URL_Upload='http://127.0.0.1:8000'
 
+const COMMON_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVmOTMxNGZiMjBjYzU5ZDRlMTI4MDY3In0sImlhdCI6MTcxMDgzMTY3MH0.2JyAVS8AkH6U1Mv_rPdRMIQEgBBKTQ9AhD8o5HUHFto'
+
+const UPLOAD_SERVER='https://backend-projectmanagement-1.onrender.com/api'
 
 const HEALTH_NEWS_API_KEY='0505bf26946c4c4f8804d1e91674edde'
 
 
 
-export {  blackText, grayText, blueText,colorTheme,API_URL,HEALTH_NEWS_API_KEY ,API_URL_AIML}
+export {  blackText, grayText, blueText,colorTheme,API_URL,HEALTH_NEWS_API_KEY ,API_URL_AIML,API_URL_Upload,COMMON_TOKEN,UPLOAD_SERVER}

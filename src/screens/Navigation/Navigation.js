@@ -4,6 +4,7 @@ import Splash from '../Splash'
 import GetStarted from '../Authentication/GetStarted'
 import VerifyAccount from '../Authentication/VerifyAccount'
 import SignUp from '../Authentication/SignUp'
+import ProfileComplete from '../Authentication/ProfileComplete'
 import DoctorRegister from '../Authentication/DoctorRegister'
 import Login from '../Authentication/Login'
 import Olddisease from '../Authentication/Olddisease'
@@ -53,7 +54,8 @@ export default function App() {
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name='Splash' component={Splash} options={{ headerShown: false }} />
         <Stack.Screen name='GetStarted' component={GetStarted} options={{ headerShown: false }} />
-        <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false }} />
+        <Stack.Screen name='SignUp' component={ProfileComplete} options={{ headerShown: false }} />
+        <Stack.Screen name='ProfileComplete' component={ProfileComplete} options={{ headerShown: false }} />
         <Stack.Screen name='DoctorRegister' component={DoctorRegister} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
         <Stack.Screen name='ForgetPassword' component={ForgetPassword} options={{ headerShown: false }} />

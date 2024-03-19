@@ -105,7 +105,7 @@ export const Signup = (username, email, password, isdoctor) => (dispatch) => {
     isdoctor ?
         doctorServices.Signup(username, email, password).then(async (res) => {
             await dispatch(signedUp(res.data));
-            navigate('SuccesfullRegistration')
+            navigate('ProfileComplete')
         }).catch((err) => {
             dispatch(errorSignUp(err.response.data.error))
         }).finally(() => {

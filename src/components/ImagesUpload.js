@@ -1,10 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { colorTheme } from '../constant'
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DocumentPicker from 'react-native-document-picker';
+import { colorTheme } from '../constant';
+import { uploadServices } from '../services/UploadServices';
 
 export default function ImagesUpload() {
+  const [imageData, setimageData] = useState([]);
+
+  useEffect(() => {
+    fetchImagesData();
+  }, []);
+
+  const fetchImagesData = () => {
+    uploadServices.FetchImages()
+      .then(res => {
+        setimageData(res.data);
+      })
+      .catch(error => console.error("Error fetching images:", error));
+  };
+
   const onDocumentPress = async () => {
     try {
       let urlOfS = 'http://localhost:8000/image'; // your url
@@ -26,8 +41,10 @@ export default function ImagesUpload() {
           });
           if (responseOfFileUpload.status == 200) {
             let responseInJs = await responseOfFileUpload.json();
-            let fileName = responseInJs.fileName; // file name which will be        sent from backend
-            console.log('Upload Succesfull');
+            let fileName = responseInJs.fileName; // file name which will be sent from backend
+            console.log('Upload Successful');
+            // After successful upload, fetch images again
+            fetchImagesData();
           } else {
             console.log('Upload Failed');
           }
@@ -45,17 +62,26 @@ export default function ImagesUpload() {
         throw err;
       }
     };
-  }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <TouchableOpacity
-        onPress={() => onDocumentPress()}
-        style={{ position: 'absolute', bottom: 30, right: 25, backgroundColor: colorTheme.primaryColor, borderRadius: 50 }}>
+        onPress={onDocumentPress}
+        style={{ position: 'absolute', bottom: 30, right: 25, backgroundColor: colorTheme.primaryColor, borderRadius: 50, zIndex: 10 }}>
         <MaterialIcons name="add" size={25} color={'black'} style={{ padding: 20 }} />
       </TouchableOpacity>
-      <Text>ImagesUpload</Text>
+      <ScrollView>
+        {imageData.map((data, key) => (
+          <View key={key} style={{ width: '95%', alignSelf: 'center', marginTop: 30, borderWidth: 1, borderRadius: 10, backgroundColor: 'white', borderColor: colorTheme.borderColor, elevation: 3 }}>
+            <View style={{ padding: 10 }}>
+              <Image source={{ uri: `http://localhost:8000/fileAt/${data.meta_data.filename}` }} style={{ width: "100%", height: 200, resizeMode: 'cover', }} />
+            </View>
+          </View>
+        ))}
+      </ScrollView>
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
