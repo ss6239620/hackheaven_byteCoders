@@ -7,11 +7,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Home from '../screens/Home/Home'
 import Appointment from '../screens/AppointMents/Appointment'
 import Profile from '../screens/Profile/Profile'
-import Search from '../screens/Search/Search'
 import Activity from '../screens/Activity/Activity'
 
 import Chat from '../screens/Chat/Chat';
 import { colorTheme } from '../constant';
+import Query from '../screens/Quries/Query';
 
 
 const Tab = createBottomTabNavigator();
@@ -51,11 +51,11 @@ export default function BottomTab() {
                 }}
             />
             <Tab.Screen
-                name="Appointment"
-                component={Appointment}
+                name="Quries"
+                component={Query}
                 options={{
                     headerShown: false,
-                    tabBarLabel: 'Appointment',
+                    tabBarLabel: 'Queries',
                     tabBarIcon: ({ color, size }) => (
                         <Fontisto name="date" size={size} color={color} />
                     )
