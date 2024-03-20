@@ -33,7 +33,7 @@ async function PostBlog(title, titleBody) {
 
 async function PostTask(todo, priority) {
     // console.log(typeof priority);
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
+    const token = await AsyncStorage.getItem("userToken");
     console.log(token);
     const body = {
         "todo": todo,
@@ -44,6 +44,7 @@ async function PostTask(todo, priority) {
             'auth-token': token,
         }
     }
+    console.log(body);
 
     return new Promise((resolve, reject) => {
         axios.post(`${API_URL}/todo/posttodo`, body, config)
@@ -62,7 +63,8 @@ async function PostTask(todo, priority) {
 
 
 async function DeleteTask(id) {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
+    const token = await AsyncStorage.getItem("userToken");
+    // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
     const config = {
         headers: {
             'auth-token': token,
@@ -85,7 +87,6 @@ async function DeleteTask(id) {
 
 async function PostNotes(notes) {
     // console.log(typeof priority);
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
     console.log(token);
     const body = {
         note: notes
@@ -113,7 +114,9 @@ async function PostNotes(notes) {
 }
 
 async function getScore() {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
+    const token = await AsyncStorage.getItem("userToken");
+
+    // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
     const config = {
         headers: {
             'auth-token': token,
@@ -135,7 +138,7 @@ async function getScore() {
 
 async function PostScore(score) {
     // console.log(typeof priority);
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
+    const token = await AsyncStorage.getItem("userToken");
     console.log(token);
     const body = {
         score: score

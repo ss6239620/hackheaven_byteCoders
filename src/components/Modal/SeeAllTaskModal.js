@@ -5,6 +5,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { BlogServices } from '../../services/BlogsServices'
 import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 function Notification({ iconBackGroundColor, iconColor, iconName, Date, isDate }) {
@@ -34,7 +35,8 @@ const SetAllTaskModal = ({ modalVisible, setModalVisible }) => {
     const [Data, setData] = useState([])
 
     async function GetAllTask() {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjVjYjg5YzdjMTA4YzE0NGU4MzZkMWYwIn0sImlhdCI6MTcwNzgzNzg5NX0.Ith6JQ1gJBthbo02HRbvNxUy95tbk7GNHXY2LaW6z6o'
+        const token = await AsyncStorage.getItem("userToken");
+
         const config = {
             headers: {
                 'auth-token': token,
@@ -57,7 +59,7 @@ const SetAllTaskModal = ({ modalVisible, setModalVisible }) => {
         })
     }
 
-    function handleDelete(id,score) {
+    function handleDelete(id, score) {
         BlogServices.DeleteTask(id)
         BlogServices.PostScore(score)
         GetAllTask()
@@ -108,10 +110,10 @@ const SetAllTaskModal = ({ modalVisible, setModalVisible }) => {
                                         <View style={{ width: '69%', marginLeft: 10 }}>
                                             <Text style={[styles.smallText,]}>{res.todo}</Text>
                                         </View>
-                                        <TouchableOpacity 
-                                        onPress={()=>{handleDelete(res._id,res.priority)}}
-                                        style={{elevation:2,backgroundColor:'white',borderRadius:20}}>
-                                            <MaterialIcons name={"delete"} size={25} color={"red"} style={{padding:5}} />
+                                        <TouchableOpacity
+                                            onPress={() => { handleDelete(res._id, res.priority) }}
+                                            style={{ elevation: 2, backgroundColor: 'white', borderRadius: 20 }}>
+                                            <MaterialIcons name={"delete"} size={25} color={"red"} style={{ padding: 5 }} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>

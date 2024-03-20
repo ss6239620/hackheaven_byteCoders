@@ -7,6 +7,7 @@ import UnderLine from '../../components/UnderLine'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
+import YoutubeModal from '../../components/Modal/YoutubeModal'
 
 const data = [
   {
@@ -26,7 +27,7 @@ const data = [
     path: require('../../assets/json/tictactoe-game.json')
   },
   {
-    screen: 'JokesGenerator',
+    screen: 'ShortCaption',
     path: require('../../assets/json/joke-game.json')
   },
   {
@@ -38,8 +39,8 @@ const data = [
 
 const reccomendData = [
   {
-    screen: 'Music',
-    path: require('../../assets//img/MusicLogo.png')
+    screen: 'Youtube',
+    path: require('../../assets/img/dhruv/youtube.png')
   },
   {
     screen: 'Books',
@@ -70,14 +71,14 @@ function DifferentActivities() {
   );
 }
 
-function Reccommendations() {
+function Reccommendations({ setModalVisible }) {
   const navigation = useNavigation();
   return (
     <View style={{ padding: 3, marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
       {reccomendData.map((item, index) => (
-        <Pressable key={index} onPress={() => navigation.navigate(item.screen)} style={{ borderColor: colorTheme.borderColor, width: '48%', marginBottom: 10, borderWidth: 1, borderRadius: 20, marginTop: 5 }}>
+        <Pressable key={index} onPress={() => item.screen === 'Youtube' ? setModalVisible(true) : navigation.navigate(item.screen)} style={{ borderColor: colorTheme.borderColor, width: '48%', marginBottom: 10, borderWidth: 1, borderRadius: 20, marginTop: 5 }}>
           {item.path ?
-            <Image source={item.path} resizeMode='cover' style={{ width: '100%', height: 190, borderRadius: 20 }} />
+            <Image source={item.path} resizeMode='contain' style={{ width: '100%', height: 170, borderRadius: 20 }} />
             :
             <Image source={require('../../assets/img/hospital.jpg')} resizeMode='cover' style={{ width: '100%', height: 190, borderRadius: 20 }} />
           }
@@ -88,8 +89,7 @@ function Reccommendations() {
 }
 
 export default function Activity() {
-  const [memeModal, setMemeModal] = useState(false)
-
+  const [VideoModal, setVideoModal] = useState(false)
   const navigation = useNavigation()
 
   const [quote, setQuote] = useState("");
@@ -122,9 +122,9 @@ export default function Activity() {
   return (
     <View style={styles.container}>
       <>
-        {memeModal
+        {VideoModal
           ?
-          <MemeGeneratorModal modalVisible={memeModal} setModalVisible={setMemeModal} />
+          <YoutubeModal modalVisible={VideoModal} setModalVisible={setVideoModal} />
           : null
         }
       </>
@@ -167,17 +167,9 @@ export default function Activity() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.subContainer}>
-          <UnderLine marginTop={20} thickness={2} />
-          <TouchableOpacity
-            onPress={() => { setMemeModal(true) }}
-            style={{ backgroundColor: colorTheme.secondaryColor, borderRadius: 10, marginTop: 15, width: '60%' }}>
-            <Text style={[styles.bigText, { color: 'white', paddingHorizontal: 20, paddingVertical: 10, textAlign: 'center' }]}>CREATE A MEME</Text>
-          </TouchableOpacity>
-        </View>
         <View style={[styles.subContainer, { marginTop: 28, }]}>
-          <Text style={[styles.bigText, { textAlign: 'left', fontSize: 18, }]}>REFRESH YOUR MOOD</Text>
-          <Reccommendations />
+          <Text style={[styles.bigText, { textAlign: 'left', fontSize: 18, }]}>Learning Resources</Text>
+          <Reccommendations setModalVisible={setVideoModal} />
         </View>
         <View style={[styles.subContainer, { marginTop: 28, }]}>
           <Text style={[styles.bigText, { textAlign: 'left', fontSize: 18, }]}>ACTIVITY TO CHANGE YOUR MOOD</Text>

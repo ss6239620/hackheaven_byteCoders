@@ -37,7 +37,6 @@ import Activity from '../Activity/Activity'
 import TicTacToe from '../Activity/Tic-Tac-Toe'
 import WordGuessGame from '../Activity/WordGuessGame'
 import RockPaperScissor from '../Activity/RockPaperScissor'
-import JokesGenerator from '../Activity/JokesGenerator'
 import BubblePop from '../Activity/BubblePop'
 import Workout from '../Activity/Workout'
 import Music from '../Activity/Music'
@@ -47,6 +46,7 @@ import Survey from '../Survey/Survey'
 import HowYourDay from '../Survey/HowYourDay'
 import Helpless from '../Survey/Helpless'
 import AddProject from '../../components/AddProject'
+import ShortCaption from '../Activity/ShortCaption'
 
 const Stack = createNativeStackNavigator()
 
@@ -88,7 +88,6 @@ export default function App() {
         <Stack.Screen name='TicTacToe' component={TicTacToe} options={{ headerShown: false }} />
         <Stack.Screen name='WordGuessGame' component={WordGuessGame} options={{ headerShown: false }} />
         <Stack.Screen name='RockPaperScissor' component={RockPaperScissor} options={{ headerShown: false }} />
-        <Stack.Screen name='JokesGenerator' component={JokesGenerator} options={{ headerShown: false }} />
         <Stack.Screen name='BubblePop' component={BubblePop} options={{ headerShown: false }} />
         <Stack.Screen name='Workout' component={Workout} options={{ headerShown: false }} />
         <Stack.Screen name='Music' component={Music} options={{ headerShown: false }} />
@@ -100,6 +99,7 @@ export default function App() {
         <Stack.Screen name='Helpless' component={Helpless} options={{ headerShown: false }} />
         <Stack.Screen name='DocumentUpload' component={DocumentUpload} options={{ headerShown: false }} />
         <Stack.Screen name='AddProject' component={AddProject} options={{ headerShown: false }} />
+        <Stack.Screen name='ShortCaption' component={ShortCaption} options={{ headerShown: false }} />
       </Stack.Navigator>
   )
 }

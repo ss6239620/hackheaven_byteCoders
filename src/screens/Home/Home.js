@@ -297,11 +297,11 @@ export default function Home({ navigation }) {
           </View>
           <View style={{ borderWidth: 1, borderColor: colorTheme.borderColor, borderRadius: 10 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15 }}>
-              <Text style={[styles.smallText, { fontSize: 15, color: 'gray' }]}>TaskList for your chores!!!</Text>
+              <Text style={[styles.smallText, { fontSize: 15, color: 'gray' }]}>TaskList for your Projects!!!</Text>
               <TouchableOpacity
                 onPress={() => { setAddTaskModal(true) }}
-                style={{ backgroundColor: colorTheme.primaryColor, justifyContent: 'center', alignItems: 'center', borderRadius: 30, elevation: 10 }}>
-                <MaterialIcons name="add" color={"white"} sizae={25} style={{ padding: 10 }} />
+                style={{ backgroundColor: colorTheme.primaryColor, justifyContent: 'center', alignItems: 'center', borderRadius: 30, elevation: 10,padding:15 }}>
+                <MaterialIcons name="add" color={"white"} sizae={30} style={{  }} />
               </TouchableOpacity>
             </View>
           </View>
